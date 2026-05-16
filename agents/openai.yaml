@@ -1,0 +1,6 @@
+interface:
+  display_name: "BOSS Chrome Desktop"
+  short_description: "Operate BOSS in the user's Chrome session"
+  default_prompt: "Use $boss-chrome-desktop to operate BOSS in my currently logged-in Chrome session without using an isolated browser."
+policy:
+  allow_implicit_invocation: true
