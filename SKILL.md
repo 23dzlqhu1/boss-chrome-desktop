@@ -132,13 +132,15 @@ Use this flow after BOSS is open in the user's real Chrome session.
 
 Use this flow only after Flow 2 confirms the page is in the HR recruiting interface.
 
-1. Inspect the left navigation and locate the Communication entry.
-2. Click the Communication entry once.
-3. Wait for the page to enter the candidate communication interface, normally a URL like `/web/chat/index`.
-4. If the Communication entry is unavailable or navigation does not settle, navigate directly to `https://www.zhipin.com/web/chat/index`.
-5. Close non-business popups that block the contact list or resume panel.
-6. Confirm that the Communication entry is selected and the chat/contact list area is visible.
-7. Do not select a candidate, send a message, or open a conversation unless the user gives the next explicit step.
+1. Prefer direct route navigation over sidebar clicks. Focus Chrome, use the address bar, and navigate to `https://www.zhipin.com/web/chat/index`.
+2. Wait for the page to settle, then verify that the URL contains `/web/chat/index` and that the chat/contact list area is visible.
+3. If already on the candidate communication page, do not click the left sidebar. Only close non-business popups that block the contact list or resume panel.
+4. Use the left Communication sidebar entry only as a fallback after the current screenshot visually identifies the entry. Click it at most once.
+5. If the fallback click enters Search, Recommended Candidates, Talent Pool, candidate recommendations, or any non-chat page, stop retrying coordinates and recover by navigating directly to `https://www.zhipin.com/web/chat/index` once.
+6. If direct navigation asks for login, captcha, risk verification, account confirmation, or still does not show the communication UI after one retry, stop and report the visible state.
+7. Confirm that the Communication entry is selected or the chat/contact list area is visible before continuing.
+8. Do not ask the user to manually click Communication until direct route navigation and one verified visual-click fallback have both failed.
+9. Do not select a candidate, send a message, or open a conversation unless the user gives the next explicit step.
 
 ## Flow 4: Open First Unread Contact
 
@@ -217,7 +219,7 @@ Use this flow when the user asks to process unread contacts in a batch.
 1. Default batch size is 10 contacts. If the user specifies another count, use that count.
 2. Start from the Unread filter in the communication interface.
 3. Process one visible unread contact at a time.
-4. For each contact, open the contact, run Flow 5, output only a structured hiring summary, then close the resume and move to the next visible unread contact.
+4. For each contact, open the contact, run Flow 5, output only a structured hiring summary, then close the resume and move to the next visible contact.
 5. Track non-sensitive visible state within the run, such as list position, name/role/date tuple, or processed count, to avoid processing the same visible contact twice.
 6. If fewer than the requested number of unread contacts are available, process until the visible unread list is exhausted.
 7. When the visible list is exhausted, scroll once and inspect again. Stop if no new unread contact appears.
