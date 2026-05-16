@@ -69,6 +69,18 @@ uvx desktop-agent app list
 
 If `uv` is unavailable, ask the user to approve installing `uv` first with their preferred trusted installer or package manager, then rerun the mirror-backed `uvx desktop-agent` checks. Do not proceed with BOSS automation until the checks pass.
 
+## Desktop Control Runtime Notes
+
+Use these notes when executing through `desktop-agent` or an equivalent desktop-control layer.
+
+1. There may be no `app maximize` command. Maximize Chrome with the keyboard shortcut `win,up` after focusing the window.
+2. Pass screenshot output as a positional filename, for example `screen screenshot output.png --window "BOSS Zhipin - Google Chrome"`. Do not assume an `--output` flag exists.
+3. Pass hotkeys as comma-separated key names, for example `keyboard hotkey "win,up"` or `keyboard hotkey "ctrl,0"`.
+4. `uvx desktop-agent` can be slow when it resolves dependencies. After one successful `uvx` run, a cached `desktop-agent.exe` may exist and can be used as a local optimization, but that path is machine-specific and must never be hard-coded into a portable skill.
+5. Text-coordinate OCR commands such as `locate-text-coordinates` can fail because of OpenCV or `cv2` binary-loading issues. If OCR coordinate lookup fails, fall back to screenshots plus agent visual reading and current-window relative coordinates. Do not keep retrying broken OCR commands.
+6. Chrome can lose focus after every screenshot, image view, or tool output. Before any click or keyboard action, focus the current Chrome window again, using the current title from `app list` when needed.
+7. Chrome window titles can vary, for example between the BOSS Chrome window and another active assistant or browser title. Resolve the current visible window title dynamically instead of hard-coding one title.
+
 ## Screen And Coordinate Portability
 
 Use this when running on a different monitor, a smaller screen, a multi-monitor setup, or a different Windows scaling/DPI setting.
@@ -139,6 +151,20 @@ Use this flow only after Flow 3 confirms the candidate communication interface i
 5. Confirm that the conversation panel opens.
 6. Do not send a message, click quick-reply prompts, request a resume, request a phone number, or mark additional contacts unless the user gives the next explicit step.
 7. If no unread contacts are visible, stop and report that state.
+
+## Flow 4A: Open A Named Candidate Contact
+
+Use this flow when the user asks to open a specific candidate by name instead of simply opening the first unread contact.
+
+1. Normalize the communication page first: focus Chrome, maximize it, close blocking non-business popups, and confirm the contact list plus conversation panel are visible.
+2. Do not click repeated guessed coordinates. After one or two missed clicks, stop clicking and take a new screenshot.
+3. Identify the candidate/contact list region from the current window screenshot. Distinguish it from the left navigation rail and the right conversation/resume panel.
+4. Prefer visual reading of the current screenshot to locate the target name in the contact list. Use local OCR only if it has already passed the current environment's validation.
+5. If the target candidate is visible, click the vertical center of that candidate row, away from small badges, unread-count bubbles, avatars, and date text when possible.
+6. After clicking, verify selection by checking that the conversation header, profile summary, or opened panel shows the target candidate name. Do not assume the click succeeded.
+7. If the target candidate is not visible, use the list's current filter/search affordances when available, or scroll only the candidate list region and re-screenshot. Do not scroll the page globally unless the contact list itself is confirmed to have focus.
+8. If the UI has multiple lists such as unread contacts, active chats, recommendations, or right-side candidate panels, explicitly report which list is visible before clicking. Unknown list context is a stop condition.
+9. If the target candidate still cannot be located after searching or one controlled list scroll, stop and report the visible state instead of guessing.
 
 ## Flow 5: Open And Extract Online Resume
 
